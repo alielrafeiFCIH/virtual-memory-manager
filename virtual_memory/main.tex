@@ -1,0 +1,83 @@
+\documentclass[landscape,17pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{blindtext}
+%\usepackage{arabtex}
+%\usepackage[arabic]{babel}
+\usepackage{amsmath}
+\usepackage{enumerate}
+\usepackage{upgreek}
+\usepackage{multirow}
+\usepackage{tabu}
+%\usepackage[LFE,LAE]{fontenc}
+\usepackage{graphicx}
+\usepackage{authblk}
+\usepackage{etoolbox,lipsum}
+\usepackage[left=2cm, right=5cm, top=2cm]{geometry}
+
+
+
+%\usetheme{lucid}
+\usepackage{tabu}
+
+
+\hypersetup{
+	colorlinks,
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=black
+}
+\newgeometry{margin=1cm}
+\title{\textbf{Virtual memory manager}}
+\author{Ali Mohmaed Mokhtar\\20160249\\\\Andrew Karam \\20160090\\Ahmed Mohmed Ahmed Mohamdeen\\20160038\\Kirloes Boles Kamal\\ 20160312\\Kiroles Samer Ibrhaim  \\20160314\\\\Mina Atef Youesf\\20160460\\\&\\{\small This document was written with \LaTeX}} % \date{18/12/2018}
+\begin{document}
+
+
+\maketitle
+\newpage
+\newgeometry{left=2cm, right=5cm, top=2cm}
+
+\tableofcontents
+\newpage
+\section{Motivation}
+As the technology evolves the programs need more and more memory to run on, but to execute a process it must be on memory available for the CPU to access it Virtual memory is a technique that allows the execution of processes that are not completely in memory. One major advantage of this scheme is
+that programs can be larger than physical memory.\\
+Our project is virtual memory manager, To convert logical addresses to physical addresses to store in main memory.\\
+\includegraphics[width=.7\textwidth,height=.5\textheight]{2.png}
+\section{Be Deep in Project}
+\textbf{Our project contains of several tables}
+\\
+\begin{enumerate}
+    \item Physical memory (256*256 Entry, 256 Frame)
+    \item Page Table (256 Entry)\\
+        it contains the frame number of each each processes , it get from virtual memory
+    \item TLB (16 Entry)\\
+        it contains the frame number and page number, it's design to make search is very fast "cache"
+    \item Virtual Memory(the binary file)
+\end{enumerate}
+\includegraphics[width=.7\textwidth]{1.png}\\
+\subsection{Functions we used}
+\begin{itemize}
+  \item \hyperlink{main}{Main Function}
+  \item \hyperlink{tlb}{Search in TLB}
+  \item \hyperlink{pt}{Search in Page Table}
+  \item \hyperlink{bs}{Search in Back Store}
+  \item \hyperlink{itlb}{Insert into TLB}
+\end{itemize}
+\subsection{Brief on what does the code do}
+ We take logical address from addresses file, each address is 32bit.
+We get the first 16 bit of this addresses.
+then, we get the offset number by masking the first 8 bits.\\
+And the page Number by shifting the 16 bit to the right by 8 bits. Then we search the transfer look-up buffer table for the frame number if it returns that's considered a hit, if it's not found we search the page table and if it's not there that means it's a page fault and have never been into memory so we read the frame data from the virtual memory file and put it into memory and assign appropriate frame number to it.
+\section{Code Implementation}
+In the \hypertarget{main}{\textbf{Main Function}} simply we initialize each of the TLB and the page table to be (-1) because page/frame number can be 0.
+Then we create two file streams one to read the addresses file which is given and a write stream on a file we will export our results in, Then for each read address we extract the page number and the offset from the logical address by masking as explained earlier.\\\\
+Next we search with the page number in the \hypertarget{tlb}{\textbf{Search TLB Function}} if a matching record found we return the corresponding frame number to the main function and it's considered a hit for the TLB otherwise we send the page number to the page table.\\\\
+In the  \hypertarget{pt}{\textbf{Search Page Table Function}} we search if the page number is recorded in it and if it is we return the frame number if not that means it's a page fault error as it never been into memory.
+So in  \hypertarget{bs}{\textbf{Search Back Store Function}} we get the data from the virtual memory file and move it to the memory in the first available frame and we insert that frame number into the TLB and page table.\\\\
+Another problem we faced is in the \hypertarget{itlb}{\textbf{Insert into TLB Function}} as we know the size of TLB is limited we had to find an algorithm to free one place from the TLB and shift the rest so we tried FIFO (First-in-First-Out) and LIFO (Last-in-First-Out) to see if the hit rate would change much, but it was only one hit difference.
+
+\end{document}
